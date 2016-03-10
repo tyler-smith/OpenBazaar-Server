@@ -43,6 +43,7 @@ def run(*args):
     RESTPORT = args[4]
     WSPORT = args[5]
     HEARTBEATPORT = args[6]
+    I2P = args[7]
 
     def start_server(keys, first_startup=False):
         # logging
@@ -74,7 +75,10 @@ def run(*args):
             task.LoopingCall(mserver.get_messages, mlistener).start(3600)
             task.LoopingCall(check_unfunded_for_payment, db, libbitcoin_client, nlistener, TESTNET).start(600)
 
-        protocol = OpenBazaarProtocol(db, (ip_address, port), nat_type, testnet=TESTNET,
+        if I2P:
+            # protocol = OpenBazaarI2PProtocol()...
+        else:
+            protocol = OpenBazaarProtocol(db, (ip_address, port), nat_type, testnet=TESTNET,
                                       relaying=True if nat_type == FULL_CONE else False)
 
         # kademlia
@@ -234,6 +238,7 @@ commands:
             parser.add_argument('-w', '--websocketport', help="set the websocket api port", default=18466)
             parser.add_argument('-b', '--heartbeatport', help="set the heartbeat port", default=18470)
             parser.add_argument('--pidfile', help="name of the pid file", default="openbazaard.pid")
+            parser.add_argument('--i2p', action='store_true', help="use the i2p networking layer")
             args = parser.parse_args(sys.argv[2:])
 
             self.print_splash_screen()
@@ -248,7 +253,7 @@ commands:
                 self.daemon.pidfile = "/tmp/" + args.pidfile
                 self.daemon.start(args.testnet, args.loglevel, port, args.allowip,
                                   int(args.restapiport), int(args.websocketport),
-                                  int(args.heartbeatport), time.time())
+                                  int(args.heartbeatport), args.i2p, time.time())
             else:
                 run(args.testnet, args.loglevel, port, args.allowip,
                     int(args.restapiport), int(args.websocketport),
