@@ -211,6 +211,9 @@ class HashMap(object):
             return None
         return ret[0]
 
+    def get_local_file(self, hash_value):
+        return join(DATA_FOLDER, self.get_file(hash_value))
+
     def get_all(self):
         conn = Database.connect_database(self.PATH)
         cursor = conn.cursor()

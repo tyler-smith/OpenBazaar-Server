@@ -1,6 +1,7 @@
 import os
 import unittest
 import time
+from config import DATA_FOLDER
 from db.datastore import Database
 from dht.utils import digest
 from protos.objects import Profile, Listings, Following, Metadata, Followers, Node, FULL_CONE
@@ -75,6 +76,11 @@ class DatastoreTest(unittest.TestCase):
         self.hm.insert(self.test_hash, self.test_file)
         f = self.hm.get_file(self.test_hash)
         self.assertEqual(f, self.test_file)
+
+    def test_hashmapGetLocalFile(self):
+        self.hm.insert(self.test_hash, self.test_file)
+        f = self.hm.get_local_file(self.test_hash)
+        self.assertEqual(f, os.path.join(DATA_FOLDER, self.test_file))
 
     def test_hashmapDelete(self):
         self.hm.insert(self.test_hash, self.test_file)
